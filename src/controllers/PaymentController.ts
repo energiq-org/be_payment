@@ -127,15 +127,9 @@ export class PaymentController {
     async payTransaction(req: Request, res: Response): Promise<void> {
         try {
             const { transactionId } = req.params;
-            const authenticatedUserId = req["userId"] as string;
             
             if (!transactionId) {
                 res.status(400).json({ error: "Transaction ID is required" });
-                return;
-            }
-
-            if (!authenticatedUserId) {
-                res.status(401).json({ error: "Authentication required" });
                 return;
             }
 
@@ -144,12 +138,6 @@ export class PaymentController {
             
             if (!transactionDetails) {
                 res.status(404).json({ error: "Transaction not found" });
-                return;
-            }
-
-            // Verify that the transaction belongs to the authenticated user
-            if (transactionDetails.user_id !== authenticatedUserId) {
-                res.status(403).json({ error: "Access denied: Transaction does not belong to authenticated user" });
                 return;
             }
 
@@ -162,7 +150,7 @@ export class PaymentController {
             }
 
             // For now, use basic user data for payment
-            // In a real implementation, this would come from the auth service or request payload
+            // In a real implementation, this would come from the request payload or user service
             const userData: UserData = {
                 first_name: "User",
                 last_name: "Customer",

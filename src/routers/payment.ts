@@ -1,17 +1,15 @@
 import { Router } from "express";
 import { PaymentController } from "../controllers/PaymentController.js";
 import { docs } from "../docs/index.js";
-import { generateJSONRequestBody, generateJSONResponse, getErrorResponses, getSecuritySchemes } from "../docs/helpers.js";
+import { generateJSONRequestBody, generateJSONResponse, getErrorResponses } from "../docs/helpers.js";
 import {
     transactionPaymentDetailsSchema,
     createTransactionPaymentSchema,
     paymentUrlResponseSchema,
     transactionListResponseSchema,
-    webhookRequestSchema,
     PaymobWebhookPayloadSchema,
 } from "../schemas/payment.js";
 import { successResponseSchema } from "../schemas/common-responses.js";
-import { authMiddleware } from "../middlewares/auth.js";
 
 const paymentRouter = Router();
 const paymentController = new PaymentController();
@@ -23,10 +21,9 @@ paymentRouter.get(
         summary: "Get transaction payment details",
         description: "Retrieve payment details for a specific transaction",
         tags: ["Payments"],
-        security: getSecuritySchemes(),
         responses: {
             200: generateJSONResponse(transactionPaymentDetailsSchema, "Transaction payment details retrieved successfully"),
-            ...getErrorResponses(["400", "401", "404", "500"]),
+            ...getErrorResponses(["400", "404", "500"]),
         },
     }),
     paymentController.getTransactionPaymentDetails.bind(paymentController)
@@ -39,10 +36,9 @@ paymentRouter.get(
         summary: "Get provider payment transactions",
         description: "Retrieve all payment transactions for a specific provider",
         tags: ["Payments"],
-        security: getSecuritySchemes(),
         responses: {
             200: generateJSONResponse(transactionListResponseSchema, "Provider transactions retrieved successfully"),
-            ...getErrorResponses(["400", "401", "500"]),
+            ...getErrorResponses(["400", "500"]),
         },
     }),
     paymentController.getProviderPaymentTransactions.bind(paymentController)
@@ -55,10 +51,9 @@ paymentRouter.get(
         summary: "Get user payment transactions",
         description: "Retrieve all payment transactions for a specific user",
         tags: ["Payments"],
-        security: getSecuritySchemes(),
         responses: {
             200: generateJSONResponse(transactionListResponseSchema, "User transactions retrieved successfully"),
-            ...getErrorResponses(["400", "401", "500"]),
+            ...getErrorResponses(["400", "500"]),
         },
     }),
     paymentController.getUserPaymentTransactions.bind(paymentController)
@@ -71,11 +66,10 @@ paymentRouter.post(
         summary: "Create transaction payment",
         description: "Create a new transaction payment record with PENDING status",
         tags: ["Payments"],
-        security: getSecuritySchemes(),
         requestBody: generateJSONRequestBody(createTransactionPaymentSchema, "Transaction payment data"),
         responses: {
             201: generateJSONResponse(successResponseSchema, "Transaction payment created successfully"),
-            ...getErrorResponses(["400", "401", "500"]),
+            ...getErrorResponses(["400", "500"]),
         },
     }),
     paymentController.putTransactionPayment.bind(paymentController)
@@ -86,15 +80,13 @@ paymentRouter.post(
     "/transactions/:transactionId/pay",
     docs.path({
         summary: "Process payment",
-        description: "Generate payment URL and set transaction status to IN_PROGRESS. Requires authentication and transaction ownership verification.",
+        description: "Generate payment URL and set transaction status to IN_PROGRESS.",
         tags: ["Payments"],
-        security: getSecuritySchemes(),
         responses: {
             200: generateJSONResponse(paymentUrlResponseSchema, "Payment URL generated successfully"),
-            ...getErrorResponses(["400", "401", "403", "404", "500", "502"]),
+            ...getErrorResponses(["400", "404", "500", "502"]),
         },
     }),
-    authMiddleware,
     paymentController.payTransaction.bind(paymentController)
 );
 
@@ -114,4 +106,4 @@ paymentRouter.post(
     paymentController.handlePaymentWebhook.bind(paymentController)
 );
 
-export { paymentRouter }; 
+export { paymentRouter };

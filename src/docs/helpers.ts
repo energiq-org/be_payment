@@ -10,7 +10,6 @@ import {
     goneErrorSchema,
     internalServerErrorSchema,
     notFoundErrorSchema,
-    unauthorizedErrorSchema,
 } from "../schemas/common-responses.js";
 import { TSchema } from "@sinclair/typebox";
 
@@ -74,9 +73,6 @@ function getErrorResponses(codes: string[]) {
             case "400":
                 responses[code] = generateJSONResponse(badRequestErrorSchema, "Bad request");
                 break;
-            case "401":
-                responses[code] = generateJSONResponse(unauthorizedErrorSchema, "Unauthorized");
-                break;
             case "403":
                 responses[code] = generateJSONResponse(forbiddenErrorSchema, "Forbidden");
                 break;
@@ -96,18 +92,9 @@ function getErrorResponses(codes: string[]) {
     return responses;
 }
 
-function getSecuritySchemes() {
-    return [
-        {
-            BearerSecurityScheme: [],
-        },
-    ];
-}
-
 export {
     generateJSONRequestBody,
     generateJSONResponse,
     getErrorResponses,
-    getSecuritySchemes,
     generateRequestParameters,
 }; 

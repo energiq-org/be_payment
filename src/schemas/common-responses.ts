@@ -20,10 +20,6 @@ const notFoundErrorSchema = Type.Object({
     error: Type.String(),
 });
 
-const unauthorizedErrorSchema = Type.Object({
-    error: Type.String(),
-});
-
 const conflictErrorSchema = Type.Object({
     error: Type.String(),
 });
@@ -40,5 +36,4 @@ export {
     internalServerErrorSchema,
     notFoundErrorSchema,
     successResponseSchema,
-    unauthorizedErrorSchema,
 }; 
