@@ -22,7 +22,6 @@
     "migration:run": "npx typeorm-ts-node-esm migration:run -d src/config/dbConnection.ts"
   },
   "dependencies": {
-    "@energiq/rpc": "file:../be_rpc",
     "@aws-sdk/client-s3": "^3.758.0",
     "@aws-sdk/s3-request-presigner": "^3.758.0",
     "@intelika/swagger-theme": "^1.0.4",

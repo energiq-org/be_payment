@@ -1,6 +1,5 @@
 import { Type } from "@sinclair/typebox";
 import { UserDataSchema } from "../utils/paymob.js";
-import { UserDetailsSchema } from "../services/rpcConsumer.js";
 
 // Payment status enum schema
 const paymentStatusSchema = Type.Union([
@@ -124,5 +123,4 @@ export {
     webhookRequestSchema,
     PaymobWebhookPayloadSchema,
     UserDataSchema,
-    UserDetailsSchema,
 }; 

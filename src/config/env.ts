@@ -18,7 +18,6 @@ const config = cleanEnv(process.env, {
     PAYMOB_SECRET_KEY: str(),
     PAYMOB_PUBLIC_KEY: str(),
     PAYMOB_PAYMENT_METHOD: num(),
-    RPC_TIMEOUT: num({ default: 5000 }),
 });
 
 export default config; 

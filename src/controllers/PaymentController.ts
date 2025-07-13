@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { PaymentRepository } from "../services/paymentRepository.js";
 import { PaymentStatus } from "../types/payment.js";
-import { RPCConsumerService } from "../services/rpcConsumer.js";
 import { Paymob, UserData } from "../utils/paymob.js";
 import { PaymobWebhookPayloadSchema } from "../schemas/payment.js";
 import { Static } from "@sinclair/typebox";
@@ -9,12 +8,10 @@ import logger from "../utils/logging.js";
 
 export class PaymentController {
     private paymentRepository: PaymentRepository;
-    private rpcConsumer: RPCConsumerService;
     private paymob: Paymob;
 
     constructor() {
         this.paymentRepository = PaymentRepository.getInstance();
-        this.rpcConsumer = RPCConsumerService.getInstance();
         this.paymob = new Paymob();
     }
 
@@ -156,14 +153,6 @@ export class PaymentController {
                 return;
             }
 
-            // Get user details via RPC
-            const userDetails = await this.rpcConsumer.getUserDetails(transactionDetails.user_id);
-            
-            if (!userDetails) {
-                res.status(404).json({ error: "User not found" });
-                return;
-            }
-
             // Get transaction amount using the payment client
             const amount = await this.paymentRepository.getTransactionAmount(transactionId);
             
@@ -172,15 +161,19 @@ export class PaymentController {
                 return;
             }
 
+            // For now, use basic user data for payment
+            // In a real implementation, this would come from the auth service or request payload
+            const userData: UserData = {
+                first_name: "User",
+                last_name: "Customer",
+                email: `user-${transactionDetails.user_id.slice(0, 8)}@example.com`,
+                phone_number: "+201234567890"
+            };
+
             // Create payment intention with Paymob
             const paymentUrl = await this.paymob.createPaymentIntention(
                 amount,
-                {
-                    first_name: userDetails.first_name,
-                    last_name: userDetails.last_name,
-                    email: userDetails.email,
-                    phone_number: userDetails.phone_number
-                },
+                userData,
                 transactionId
             );
 
